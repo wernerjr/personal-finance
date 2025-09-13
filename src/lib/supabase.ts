@@ -11,8 +11,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
-    redirectTo: `${import.meta.env.VITE_APP_URL || window.location.origin}/home`
+    detectSessionInUrl: true
   }
 })
 

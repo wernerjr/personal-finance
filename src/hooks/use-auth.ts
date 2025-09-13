@@ -114,10 +114,26 @@ export function useAuth() {
 
   const signInWithEmail = async (email: string) => {
     try {
+      // Buscar URL base das variáveis de ambiente ou detectar automaticamente
+      const getBaseUrl = () => {
+        // Priorizar variável de ambiente se definida
+        if (import.meta.env.VITE_APP_URL) {
+          return import.meta.env.VITE_APP_URL
+        }
+        
+        // Fallback: detectar automaticamente baseado no ambiente
+        if (import.meta.env.PROD) {
+          return window.location.origin
+        }
+        
+        // Desenvolvimento: usar localhost
+        return 'http://localhost:5173'
+      }
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${import.meta.env.VITE_APP_URL || window.location.origin}/home`,
+          emailRedirectTo: `${getBaseUrl()}/home`,
         },
       })
 
