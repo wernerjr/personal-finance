@@ -155,7 +155,9 @@ O aplicativo estará disponível em `http://localhost:5173`
 ### 1. Autenticação
 - Configure a autenticação por email no painel do Supabase
 - Ative o magic link nas configurações de autenticação
-- Configure a URL de redirecionamento: `http://localhost:5173/`
+- Configure as URLs de redirecionamento:
+  - **Desenvolvimento**: `http://localhost:5173/home`
+  - **Produção**: `https://personal-finance-eta-five.vercel.app/home`
 
 ### 2. Banco de Dados
 - **Recomendado**: Use o script `supabase-setup.sql` (configuração completa)
@@ -197,6 +199,24 @@ O arquivo `supabase-setup.sql` inclui:
 - O sistema gera automaticamente uma API key única para cada usuário
 - A API key é exibida na home do usuário
 - Use a API key no header `x-api-key` para acessar a API REST
+
+### 5. Configuração de Produção
+
+Para configurar o projeto em produção (Vercel):
+
+1. **Configure as variáveis de ambiente no Vercel:**
+   ```
+   VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+   VITE_SUPABASE_ANON_KEY=sua_chave_anonima_aqui
+   VITE_APP_URL=https://personal-finance-eta-five.vercel.app
+   ```
+
+2. **Configure o Supabase:**
+   - Acesse o painel do Supabase
+   - Vá para Authentication > URL Configuration
+   - Adicione as URLs de redirecionamento:
+     - `https://personal-finance-eta-five.vercel.app/home`
+     - `http://localhost:5173/home` (para desenvolvimento)
 
 ## 📱 Uso da API REST
 
