@@ -67,59 +67,81 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 4. **Configure o banco de dados**
-Execute os seguintes SQLs no Supabase SQL Editor:
-
-```sql
--- Tabela de despesas
-CREATE TABLE expenses (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_mail TEXT NOT NULL,
-  description VARCHAR(100) NOT NULL,
-  value DECIMAL(10,2) NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('food', 'study', 'transport', 'fun', 'other')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  user_ip TEXT NOT NULL
-);
-
--- Tabela de API keys
-CREATE TABLE api_keys (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_mail TEXT NOT NULL,
-  api_key TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  revoked BOOLEAN DEFAULT FALSE
-);
-
--- Índices para performance
-CREATE INDEX idx_expenses_user_mail ON expenses(user_mail);
-CREATE INDEX idx_expenses_created_at ON expenses(created_at);
-CREATE INDEX idx_api_keys_api_key ON api_keys(api_key);
-CREATE INDEX idx_api_keys_user_mail ON api_keys(user_mail);
-
--- RLS (Row Level Security)
-ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
-ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
-
--- Políticas de segurança
-CREATE POLICY "Users can view their own expenses" ON expenses
-  FOR SELECT USING (auth.jwt() ->> 'email' = user_mail);
-
-CREATE POLICY "Users can insert their own expenses" ON expenses
-  FOR INSERT WITH CHECK (auth.jwt() ->> 'email' = user_mail);
-
-CREATE POLICY "Users can update their own expenses" ON expenses
-  FOR UPDATE USING (auth.jwt() ->> 'email' = user_mail);
-
-CREATE POLICY "Users can delete their own expenses" ON expenses
-  FOR DELETE USING (auth.jwt() ->> 'email' = user_mail);
-
-CREATE POLICY "Users can view their own api keys" ON api_keys
-  FOR SELECT USING (auth.jwt() ->> 'email' = user_mail);
-
-CREATE POLICY "Users can insert their own api keys" ON api_keys
-  FOR INSERT WITH CHECK (auth.jwt() ->> 'email' = user_mail);
-```
+   
+   **Opção 1: Script SQL Completo (Recomendado)**
+   
+   Use o arquivo `supabase-setup.sql` incluído no projeto. Este script completo configura:
+   - ✅ Todas as tabelas necessárias
+   - ✅ Índices otimizados para performance
+   - ✅ Políticas de segurança (RLS)
+   - ✅ Funções auxiliares para API keys
+   - ✅ Triggers para atualização automática
+   - ✅ Views úteis para estatísticas
+   - ✅ Permissões configuradas
+   - ✅ Validações de dados
+   
+   **Como usar:**
+   1. Acesse o [Supabase Dashboard](https://supabase.com)
+   2. Vá para o seu projeto
+   3. Clique em "SQL Editor" no menu lateral
+   4. Copie e cole todo o conteúdo do arquivo `supabase-setup.sql`
+   5. Clique em "Run" para executar
+   
+   **Opção 2: Configuração Manual**
+   
+   Se preferir configurar manualmente, execute os seguintes SQLs básicos:
+   
+   ```sql
+   -- Tabela de despesas
+   CREATE TABLE expenses (
+     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+     user_mail TEXT NOT NULL,
+     description VARCHAR(100) NOT NULL,
+     value DECIMAL(10,2) NOT NULL,
+     type TEXT NOT NULL CHECK (type IN ('food', 'study', 'transport', 'fun', 'other')),
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+     user_ip TEXT NOT NULL
+   );
+   
+   -- Tabela de API keys
+   CREATE TABLE api_keys (
+     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+     user_mail TEXT NOT NULL,
+     api_key TEXT UNIQUE NOT NULL,
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+     revoked BOOLEAN DEFAULT FALSE
+   );
+   
+   -- Índices para performance
+   CREATE INDEX idx_expenses_user_mail ON expenses(user_mail);
+   CREATE INDEX idx_expenses_created_at ON expenses(created_at);
+   CREATE INDEX idx_api_keys_api_key ON api_keys(api_key);
+   CREATE INDEX idx_api_keys_user_mail ON api_keys(user_mail);
+   
+   -- RLS (Row Level Security)
+   ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
+   
+   -- Políticas de segurança
+   CREATE POLICY "Users can view their own expenses" ON expenses
+     FOR SELECT USING (auth.jwt() ->> 'email' = user_mail);
+   
+   CREATE POLICY "Users can insert their own expenses" ON expenses
+     FOR INSERT WITH CHECK (auth.jwt() ->> 'email' = user_mail);
+   
+   CREATE POLICY "Users can update their own expenses" ON expenses
+     FOR UPDATE USING (auth.jwt() ->> 'email' = user_mail);
+   
+   CREATE POLICY "Users can delete their own expenses" ON expenses
+     FOR DELETE USING (auth.jwt() ->> 'email' = user_mail);
+   
+   CREATE POLICY "Users can view their own api keys" ON api_keys
+     FOR SELECT USING (auth.jwt() ->> 'email' = user_mail);
+   
+   CREATE POLICY "Users can insert their own api keys" ON api_keys
+     FOR INSERT WITH CHECK (auth.jwt() ->> 'email' = user_mail);
+   ```
 
 5. **Execute o projeto**
 ```bash
@@ -136,10 +158,42 @@ O aplicativo estará disponível em `http://localhost:5173`
 - Configure a URL de redirecionamento: `http://localhost:5173/`
 
 ### 2. Banco de Dados
-- Execute os SQLs fornecidos acima
+- **Recomendado**: Use o script `supabase-setup.sql` (configuração completa)
+- **Alternativo**: Execute os SQLs básicos fornecidos acima
 - Verifique se as políticas RLS estão ativas
 
-### 3. API Keys
+### 3. Script SQL Completo (`supabase-setup.sql`)
+
+O arquivo `supabase-setup.sql` inclui:
+
+#### 🗄️ **Estrutura de Dados**
+- Tabelas `expenses` e `api_keys` com validações
+- Índices otimizados para performance
+- Constraints e validações de dados
+
+#### 🔒 **Segurança**
+- Row Level Security (RLS) ativado
+- Políticas de segurança para cada operação
+- Usuários só acessam seus próprios dados
+
+#### ⚙️ **Funções Auxiliares**
+- `create_user_api_key()` - Cria API keys automaticamente
+- `validate_api_key()` - Valida chaves de API
+- `generate_api_key()` - Gera chaves seguras
+- `update_updated_at_column()` - Atualiza timestamps automaticamente
+
+#### 📊 **Views Úteis**
+- `user_expense_stats` - Estatísticas por usuário
+- `current_month_expenses` - Despesas do mês atual
+
+#### 🔄 **Triggers**
+- Atualização automática de `updated_at` nas despesas
+
+#### ✅ **Verificações**
+- Script idempotente (pode ser executado múltiplas vezes)
+- Verificações de integridade ao final da execução
+
+### 4. API Keys
 - O sistema gera automaticamente uma API key única para cada usuário
 - A API key é exibida na home do usuário
 - Use a API key no header `x-api-key` para acessar a API REST
@@ -238,24 +292,63 @@ Todos os gráficos são implementados com Recharts:
 - `npm run preview` - Preview do build
 - `npm run lint` - Linting do código
 
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
-
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+Este projeto está sob a licença MIT
 
-## 🆘 Suporte
 
-Para dúvidas ou problemas:
-1. Verifique a documentação do Supabase
-2. Consulte os issues do repositório
-3. Abra uma nova issue com detalhes do problema
+## 🔧 Troubleshooting
+
+### Problemas Comuns
+
+#### ❌ **Loading eterno após F5**
+- **Causa**: Problemas na autenticação ou busca de API keys
+- **Solução**: Verifique se o script `supabase-setup.sql` foi executado completamente
+- **Verificação**: Abra o console do navegador para ver logs de erro
+
+#### ❌ **Erro de permissão no Supabase**
+- **Causa**: RLS não configurado ou políticas incorretas
+- **Solução**: Execute o script `supabase-setup.sql` novamente
+- **Verificação**: No Supabase Dashboard > Authentication > Policies
+
+#### ❌ **API key não é gerada**
+- **Causa**: Função `create_user_api_key` não existe
+- **Solução**: Execute o script `supabase-setup.sql` completo
+- **Verificação**: No Supabase Dashboard > SQL Editor, execute:
+  ```sql
+  SELECT routine_name FROM information_schema.routines 
+  WHERE routine_name = 'create_user_api_key';
+  ```
+
+#### ❌ **Erro de locale no SQL**
+- **Causa**: Configuração de locale não suportada
+- **Solução**: Use a versão atualizada do `supabase-setup.sql`
+- **Nota**: O script foi corrigido para remover configurações incompatíveis
+
+### Verificações de Integridade
+
+Após executar o script SQL, verifique se:
+
+1. **Tabelas criadas**:
+   ```sql
+   SELECT table_name FROM information_schema.tables 
+   WHERE table_schema = 'public' 
+   AND table_name IN ('expenses', 'api_keys');
+   ```
+
+2. **Políticas RLS ativas**:
+   ```sql
+   SELECT schemaname, tablename, policyname 
+   FROM pg_policies 
+   WHERE schemaname = 'public';
+   ```
+
+3. **Funções criadas**:
+   ```sql
+   SELECT routine_name FROM information_schema.routines 
+   WHERE routine_schema = 'public' 
+   AND routine_name IN ('create_user_api_key', 'validate_api_key');
+   ```
 
 ---
 
