@@ -49,7 +49,7 @@ export class ApiClient {
       ...options,
       headers: {
         ...DEFAULT_HEADERS,
-        ...options.headers
+        ...(options.headers && typeof options.headers === 'object' ? options.headers as Record<string, string> : {})
       }
     }
 
