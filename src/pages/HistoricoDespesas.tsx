@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { useExpenses } from '@/hooks/use-expenses'
 import { Button } from '@/components/ui/button'
@@ -10,12 +10,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
-import { ArrowLeft, Plus, MoreHorizontal, Edit2, Trash2, BarChart3 } from 'lucide-react'
+import { ArrowLeft, Plus, Edit2, Trash2, BarChart3 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
 import { formatCurrency, formatDate, truncateText } from '@/lib/utils'
-import { EXPENSE_TYPE_LABELS, ExpenseType } from '@/types'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
+import { EXPENSE_TYPE_LABELS } from '@/types'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 type SortField = 'value' | 'created_at' | 'type'
 type SortOrder = 'asc' | 'desc'
@@ -32,7 +32,6 @@ export default function HistoricoDespesas() {
   const [filterDate, setFilterDate] = useState<string>('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState<string>('')
-  const [selectedExpense, setSelectedExpense] = useState<any>(null)
 
   const filteredAndSortedExpenses = useMemo(() => {
     let filtered = expenses

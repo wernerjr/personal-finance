@@ -1,6 +1,5 @@
 // Configurações e utilitários para API
 
-import { createError, ERROR_CODES } from './errors'
 
 // Configurações da API
 export const API_CONFIG = {
@@ -43,10 +42,10 @@ export class ApiClient {
    */
   async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: Record<string, unknown> = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`
-    const config: RequestInit = {
+    const config: Record<string, unknown> = {
       ...options,
       headers: {
         ...DEFAULT_HEADERS,
@@ -118,7 +117,7 @@ export class ApiClient {
    */
   async post<T>(
     endpoint: string,
-    data?: any,
+    data?: unknown,
     headers?: Record<string, string>
   ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {

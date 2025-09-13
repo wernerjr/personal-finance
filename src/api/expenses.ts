@@ -55,30 +55,37 @@ export async function createExpenseViaApi(apiKey: string, expenseData: CreateExp
 }
 
 // Função para validar os dados da despesa
-export function validateExpenseData(data: any): { isValid: boolean; error?: string; validatedData?: CreateExpenseData } {
-  if (!data.description || typeof data.description !== 'string' || data.description.trim().length === 0) {
+export function validateExpenseData(data: unknown): { isValid: boolean; error?: string; validatedData?: CreateExpenseData } {
+  // Verificar se data é um objeto
+  if (!data || typeof data !== 'object' || data === null) {
+    return { isValid: false, error: 'Dados inválidos' }
+  }
+
+  const expenseData = data as Record<string, unknown>
+
+  if (!expenseData.description || typeof expenseData.description !== 'string' || expenseData.description.trim().length === 0) {
     return { isValid: false, error: 'Descrição é obrigatória' }
   }
 
-  if (data.description.length > 100) {
+  if (expenseData.description.length > 100) {
     return { isValid: false, error: 'Descrição deve ter no máximo 100 caracteres' }
   }
 
-  if (!data.value || typeof data.value !== 'number' || data.value <= 0) {
+  if (!expenseData.value || typeof expenseData.value !== 'number' || expenseData.value <= 0) {
     return { isValid: false, error: 'Valor deve ser um número positivo' }
   }
 
   const validTypes = ['food', 'study', 'transport', 'fun', 'other']
-  if (!data.type || !validTypes.includes(data.type)) {
+  if (!expenseData.type || !validTypes.includes(expenseData.type as string)) {
     return { isValid: false, error: 'Tipo deve ser um dos seguintes: food, study, transport, fun, other' }
   }
 
   return {
     isValid: true,
     validatedData: {
-      description: data.description.trim(),
-      value: data.value,
-      type: data.type
+      description: expenseData.description.trim(),
+      value: expenseData.value,
+      type: expenseData.type as CreateExpenseData['type']
     }
   }
 }

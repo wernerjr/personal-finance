@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import { ApiKey } from '@/types'
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
@@ -84,7 +83,7 @@ export function useAuth() {
         .eq('revoked', false)
         .single()
 
-      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as { data: { api_key: string } | null; error: { code: string; message: string } | null }
 
       if (error) {
         console.error('❌ Erro ao buscar API key:', error)
