@@ -14,8 +14,6 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
   },
   "keywords": [
     "react",
