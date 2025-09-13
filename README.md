@@ -213,10 +213,15 @@ Para configurar o projeto em produção (Vercel):
 
 2. **Configure o Supabase:**
    - Acesse o painel do Supabase
-   - Vá para Authentication > URL Configuration
-   - Adicione as URLs de redirecionamento:
+   - Vá para **Authentication > URL Configuration**
+   - Em **Site URL**, configure:
+     - **Desenvolvimento**: `http://localhost:5173`
+     - **Produção**: `https://personal-finance-eta-five.vercel.app`
+   - Em **Redirect URLs**, adicione:
      - `https://personal-finance-eta-five.vercel.app/home`
-     - `http://localhost:5173/home` (para desenvolvimento)
+     - `http://localhost:5173/home`
+     - `https://personal-finance-eta-five.vercel.app/**`
+     - `http://localhost:5173/**`
 
 ## 📱 Uso da API REST
 
@@ -344,6 +349,15 @@ Este projeto está sob a licença MIT
 - **Causa**: Configuração de locale não suportada
 - **Solução**: Use a versão atualizada do `supabase-setup.sql`
 - **Nota**: O script foi corrigido para remover configurações incompatíveis
+
+#### ❌ **Magic link redirecionando para localhost em produção**
+- **Causa**: URL de redirecionamento configurada incorretamente no Supabase
+- **Solução**: 
+  1. Configure a variável `VITE_APP_URL` no Vercel
+  2. No Supabase, vá para **Authentication > URL Configuration**
+  3. Configure **Site URL** para a URL de produção
+  4. Adicione todas as URLs de redirecionamento necessárias
+- **Verificação**: O magic link deve redirecionar para a URL de produção
 
 ### Verificações de Integridade
 
